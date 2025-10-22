@@ -1,0 +1,25 @@
+---
+import '../styles/global.css';
+import AdminDashboard from '../components/AdminDashboard';
+import { getSession } from '../lib/auth';
+
+// Check if user is authenticated
+const session = getSession(Astro);
+
+if (!session) {
+  return Astro.redirect('/login');
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Admin Dashboard - Wedding Builder</title>
+  </head>
+
+  <body>
+    <AdminDashboard client:load />
+  </body>
+</html>
