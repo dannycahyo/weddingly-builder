@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from '../ui/card';
 import { FormField } from '../FormField';
+import { ImageUpload } from '../ImageUpload';
 import type { WeddingSiteFormData } from '../../lib/validations';
 
 interface StorySectionProps {
@@ -29,8 +30,6 @@ export function StorySection({
   watch,
 }: StorySectionProps) {
   const storyEnabled = watch('storyEnabled');
-  const storyImage1Url = watch('storyImage1Url');
-  const storyImage2Url = watch('storyImage2Url');
 
   return (
     <Card>
@@ -80,41 +79,43 @@ export function StorySection({
           />
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <FormField
-                label="Story Image 1 URL"
-                name="storyImage1Url"
-                type="url"
-                placeholder="https://example.com/image1.jpg"
-                register={register}
-                errors={errors}
-              />
-              {storyImage1Url && (
-                <img
-                  src={storyImage1Url}
-                  alt="Story 1"
-                  className="w-full h-32 object-cover rounded-md"
+            <Controller
+              name="storyImage1Url"
+              control={control}
+              render={({ field }) => (
+                <ImageUpload
+                  label="Story Image 1"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  onClear={() => field.onChange('')}
                 />
               )}
-            </div>
-            <div className="space-y-2">
-              <FormField
-                label="Story Image 2 URL (Optional)"
-                name="storyImage2Url"
-                type="url"
-                placeholder="https://example.com/image2.jpg"
-                register={register}
-                errors={errors}
-              />
-              {storyImage2Url && (
-                <img
-                  src={storyImage2Url}
-                  alt="Story 2"
-                  className="w-full h-32 object-cover rounded-md"
+            />
+
+            <Controller
+              name="storyImage2Url"
+              control={control}
+              render={({ field }) => (
+                <ImageUpload
+                  label="Story Image 2 (Optional)"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  onClear={() => field.onChange('')}
                 />
               )}
-            </div>
+            />
           </div>
+
+          {errors.storyImage1Url && (
+            <p className="text-sm text-red-500">
+              {errors.storyImage1Url.message}
+            </p>
+          )}
+          {errors.storyImage2Url && (
+            <p className="text-sm text-red-500">
+              {errors.storyImage2Url.message}
+            </p>
+          )}
         </CardContent>
       )}
     </Card>

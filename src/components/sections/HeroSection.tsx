@@ -23,6 +23,7 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { FormField } from '../FormField';
+import { ImageUpload } from '../ImageUpload';
 import type { WeddingSiteFormData } from '../../lib/validations';
 
 interface HeroSectionProps {
@@ -126,21 +127,23 @@ export function HeroSection({
             )}
           />
 
-          <FormField
-            label="Hero Image URL"
+          <Controller
             name="heroImageUrl"
-            type="url"
-            placeholder="https://example.com/image.jpg"
-            register={register}
-            errors={errors}
+            control={control}
+            render={({ field }) => (
+              <ImageUpload
+                label="Hero Image"
+                value={field.value || ''}
+                onChange={field.onChange}
+                onClear={() => field.onChange('')}
+              />
+            )}
           />
 
-          {heroImageUrl && (
-            <img
-              src={heroImageUrl}
-              alt="Hero preview"
-              className="mt-2 w-full h-48 object-cover rounded-md"
-            />
+          {errors.heroImageUrl && (
+            <p className="text-sm text-red-500">
+              {errors.heroImageUrl.message}
+            </p>
           )}
         </CardContent>
       )}
