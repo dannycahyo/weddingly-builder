@@ -17,6 +17,7 @@ import { PublishingSection } from './sections/PublishingSection';
 import { StorySection } from './sections/StorySection';
 import { GallerySection } from './sections/GallerySection';
 import { RegistrySection } from './sections/RegistrySection';
+import { MusicSection } from './sections/MusicSection';
 
 interface BuilderFormProps {
   initialData?: WeddingSite;
@@ -66,6 +67,12 @@ export default function BuilderForm({
       registryTitle: initialData?.registryTitle || 'Gift Registry',
       registryText: initialData?.registryText || '',
 
+      // Music Section
+      musicEnabled: initialData?.musicEnabled ?? true,
+      musicUrl: initialData?.musicUrl || '',
+      musicTitle: initialData?.musicTitle || '',
+      musicArtist: initialData?.musicArtist || '',
+
       // Publishing
       slug: initialData?.slug || '',
       password: initialData?.password || '',
@@ -84,6 +91,7 @@ export default function BuilderForm({
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = form;
 
@@ -119,6 +127,10 @@ export default function BuilderForm({
         registryEnabled: initialData.registryEnabled ?? true,
         registryTitle: initialData.registryTitle || 'Gift Registry',
         registryText: initialData.registryText || '',
+        musicEnabled: initialData.musicEnabled ?? true,
+        musicUrl: initialData.musicUrl || '',
+        musicTitle: initialData.musicTitle || '',
+        musicArtist: initialData.musicArtist || '',
         slug: initialData.slug || '',
         password: initialData.password || '',
         events:
@@ -267,6 +279,12 @@ export default function BuilderForm({
         errors={errors}
         control={control}
         watch={watch}
+      />
+
+      <MusicSection
+        register={register}
+        watch={watch}
+        setValue={setValue}
       />
 
       <PublishingSection

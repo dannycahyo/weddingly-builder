@@ -26,10 +26,17 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
+    // Validate file type (images and audio)
+    const isImage = file.type.startsWith('image/');
+    const isAudio =
+      file.type.startsWith('audio/') ||
+      file.name.match(/\.(mp3|wav|m4a|ogg)$/i);
+
+    if (!isImage && !isAudio) {
       return new Response(
-        JSON.stringify({ error: 'File must be an image' }),
+        JSON.stringify({
+          error: 'File must be an image or audio file',
+        }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -56,14 +63,19 @@ export const POST: APIRoute = async (context) => {
     const dataUri = `data:${file.type};base64,${base64}`;
 
     // Upload to Cloudinary
+    const resourceType = isAudio ? 'video' : 'image'; // Cloudinary uses 'video' for audio
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${
       import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME
-    }/image/upload`;
+    }/${resourceType}/upload`;
 
     const cloudinaryFormData = new FormData();
     cloudinaryFormData.append('file', dataUri);
     cloudinaryFormData.append('upload_preset', 'weddingly'); // We'll need to create this preset
     cloudinaryFormData.append('folder', 'weddingly-builder');
+
+    if (isAudio) {
+      cloudinaryFormData.append('resource_type', 'video'); // Required for audio files
+    }
 
     const uploadResponse = await fetch(cloudinaryUrl, {
       method: 'POST',
@@ -75,7 +87,9 @@ export const POST: APIRoute = async (context) => {
       console.error('Cloudinary upload error:', error);
       return new Response(
         JSON.stringify({
-          error: 'Failed to upload image to Cloudinary',
+          error: `Failed to upload ${
+            isAudio ? 'audio' : 'image'
+          } to Cloudinary`,
         }),
         {
           status: 500,
@@ -105,7 +119,7 @@ export const POST: APIRoute = async (context) => {
     const message =
       error instanceof Error
         ? error.message
-        : 'Failed to upload image';
+        : 'Failed to upload file';
     console.error('Upload error:', error);
     return new Response(JSON.stringify({ error: message }), {
       status: 500,

@@ -86,6 +86,14 @@ export const registrySectionSchema = z.object({
   registryText: z.string().optional(),
 });
 
+// Music Section Schema
+export const musicSectionSchema = z.object({
+  musicEnabled: z.boolean(),
+  musicUrl: z.string().optional(),
+  musicTitle: z.string().optional(),
+  musicArtist: z.string().optional(),
+});
+
 // Publishing Settings Schema
 export const publishingSchema = z.object({
   slug: z.string().optional(),
@@ -125,6 +133,12 @@ export const weddingSiteSchema = z.object({
   registryEnabled: z.boolean(),
   registryTitle: z.string(),
   registryText: z.string().optional(),
+
+  // Music Section
+  musicEnabled: z.boolean(),
+  musicUrl: z.string().optional(),
+  musicTitle: z.string().optional(),
+  musicArtist: z.string().optional(),
 
   // Publishing
   slug: z.string().optional(),
@@ -181,6 +195,10 @@ export interface WeddingSite {
   registryEnabled: boolean;
   registryTitle: string | null;
   registryText: string | null;
+  musicEnabled: boolean;
+  musicUrl: string | null;
+  musicTitle: string | null;
+  musicArtist: string | null;
   createdAt: Date;
   updatedAt: Date;
   events?: Event[];

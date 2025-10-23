@@ -11,6 +11,7 @@ import { RSVPForm } from './RSVPForm';
 import { FloatingDecorations } from './decorations/FloatingDecorations';
 import { CornerDecorations } from './decorations/CornerDecorations';
 import { SectionDivider } from './decorations/SectionDivider';
+import { MusicPlayer } from './MusicPlayer';
 
 interface WeddingSite {
   id: string;
@@ -37,6 +38,10 @@ interface WeddingSite {
   registryEnabled: boolean;
   registryTitle: string;
   registryText?: string;
+  musicEnabled: boolean;
+  musicUrl?: string;
+  musicTitle?: string;
+  musicArtist?: string;
   events: Array<{
     id: string;
     title: string;
@@ -402,6 +407,16 @@ export default function GuestPage({ slug }: GuestPageProps) {
               </footer>
             </ScrollAnimationWrapper>
           </div>
+
+          {/* Music Player */}
+          {weddingSite.musicEnabled && weddingSite.musicUrl && (
+            <MusicPlayer
+              musicUrl={weddingSite.musicUrl}
+              musicTitle={weddingSite.musicTitle}
+              musicArtist={weddingSite.musicArtist}
+              primaryColor={weddingSite.primaryColor}
+            />
+          )}
         </motion.div>
       )}
     </>
