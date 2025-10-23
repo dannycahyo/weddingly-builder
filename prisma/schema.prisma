@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  weddingSite WeddingSite?
+}
+
+model WeddingSite {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // URL and Publishing
+  slug      String   @unique
+  isPublished Boolean @default(false)
+  password  String?
+  
+  // Global Styles
+  primaryColor   String @default("#e4b6c6")
+  secondaryColor String @default("#d4a5a5")
+  accentColor    String @default("#9b7e7e")
+  headingFont    String @default("Playfair Display")
+  bodyFont       String @default("Lato")
+  
+  // Hero Section
+  heroEnabled      Boolean  @default(true)
+  brideName        String?
+  groomName        String?
+  weddingDate      DateTime?
+  heroImageUrl     String?
+  
+  // Our Story Section
+  storyEnabled     Boolean @default(true)
+  storyTitle       String  @default("Our Story")
+  storyText        String?
+  storyImage1Url   String?
+  storyImage2Url   String?
+  
+  // Photo Gallery Section
+  galleryEnabled   Boolean @default(false)
+  galleryTitle     String  @default("Our Gallery")
+  galleryImages    String[] // Array of image URLs (max 10)
+  
+  // Gift Registry Section
+  registryEnabled  Boolean @default(true)
+  registryTitle    String  @default("Gift Registry")
+  registryText     String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  events Event[]
+  rsvps  RSVP[]
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      WeddingSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  
+  title     String
+  date      DateTime
+  time      String
+  location  String
+  address   String
+  order     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([siteId])
+}
+
+model RSVP {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      WeddingSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  
+  fullName  String
+  email     String?
+  attending Boolean
+  dietaryRestrictions String?
+  message   String?
+  
+  createdAt DateTime @default(now())
+  
+  @@index([siteId])
+}

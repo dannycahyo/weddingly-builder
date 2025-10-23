@@ -1,0 +1,26 @@
+---
+import '../styles/global.css';
+import AuthForm from '../components/AuthForm';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Login - Wedding Builder</title>
+  </head>
+
+  <body>
+    <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">The Evermore</h1>
+          <p class="text-gray-600">Create your beautiful wedding website</p>
+        </div>
+        
+        <AuthForm client:load />
+      </div>
+    </div>
+  </body>
+</html>
