@@ -11,10 +11,18 @@ export const GET: APIRoute = async (context) => {
     });
 
     if (!weddingSite) {
+      // Return empty data instead of 404 for new users
       return new Response(
-        JSON.stringify({ error: 'Wedding site not found' }),
+        JSON.stringify({
+          rsvps: [],
+          analytics: {
+            totalAttending: 0,
+            totalDeclined: 0,
+            total: 0,
+          },
+        }),
         {
-          status: 404,
+          status: 200,
           headers: { 'Content-Type': 'application/json' },
         },
       );

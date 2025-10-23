@@ -11,7 +11,24 @@ export const GET: APIRoute = async (context) => {
     });
 
     if (!weddingSite) {
-      return new Response('Wedding site not found', { status: 404 });
+      // Return empty CSV for new users
+      const headers = [
+        'Full Name',
+        'Email',
+        'Attending',
+        'Dietary Restrictions',
+        'Message',
+        'Submitted At',
+      ];
+      const csv = headers.join(',');
+
+      return new Response(csv, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv',
+          'Content-Disposition': `attachment; filename="rsvps-empty.csv"`,
+        },
+      });
     }
 
     const rsvps = await prisma.rSVP.findMany({
