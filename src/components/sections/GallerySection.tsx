@@ -79,64 +79,95 @@ export function GallerySection({
           <Controller
             name="galleryImages"
             control={control}
-            render={({ field }) => (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">
-                    Gallery Images
-                  </label>
-                  <p className="text-xs text-muted-foreground">
-                    {field.value.length}/10 images
-                  </p>
-                </div>
+            render={({ field }) => {
+              const getGridLayout = (count: number) => {
+                // Smart layout based on image count
+                if (count === 0) return 'grid-cols-1';
+                if (count === 1) return 'grid-cols-1';
+                if (count === 2) return 'grid-cols-2';
+                if (count === 3) return 'grid-cols-2'; // 1 left, 2 right
+                if (count === 4) return 'grid-cols-2';
+                if (count === 5) return 'grid-cols-3'; // 2 left, 3 right
+                if (count >= 6) return 'grid-cols-3';
+                return 'grid-cols-3';
+              };
 
-                {errors.galleryImages && (
-                  <p className="text-sm text-red-500">
-                    {errors.galleryImages.message}
-                  </p>
-                )}
+              const getImageSpan = (index: number, total: number) => {
+                // Special spanning for specific layouts
+                if (total === 3 && index === 0) return 'row-span-2'; // First image spans 2 rows
+                if (total === 5 && index < 2) return 'row-span-2'; // First 2 images span 2 rows
+                return '';
+              };
 
-                <div className="grid grid-cols-3 gap-4">
-                  {field.value.map((url, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={url}
-                        alt={`Gallery ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-md border"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => {
-                          const newImages = field.value.filter(
-                            (_, i) => i !== index,
-                          );
-                          field.onChange(newImages);
-                        }}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
+              return (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">
+                      Gallery Images
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      {field.value.length}/10 images
+                    </p>
+                  </div>
 
-                  {field.value.length < 10 && (
-                    <div className="relative">
-                      <ImageUpload
-                        value=""
-                        onChange={(url) => {
-                          if (field.value.length < 10) {
-                            field.onChange([...field.value, url]);
-                          }
-                        }}
-                        className="h-32"
-                      />
-                    </div>
+                  {errors.galleryImages && (
+                    <p className="text-sm text-red-500">
+                      {errors.galleryImages.message}
+                    </p>
                   )}
+
+                  <div
+                    className={`grid ${getGridLayout(
+                      field.value.length,
+                    )} auto-rows-[8rem] gap-4`}
+                  >
+                    {field.value.map((url, index) => (
+                      <div
+                        key={index}
+                        className={`relative group ${getImageSpan(
+                          index,
+                          field.value.length,
+                        )}`}
+                      >
+                        <img
+                          src={url}
+                          alt={`Gallery ${index + 1}`}
+                          className="w-full h-full object-cover rounded-md border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            const newImages = field.value.filter(
+                              (_, i) => i !== index,
+                            );
+                            field.onChange(newImages);
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+
+                    {field.value.length < 10 && (
+                      <div className="relative">
+                        <ImageUpload
+                          value=""
+                          onChange={(url) => {
+                            if (field.value.length < 10) {
+                              field.onChange([...field.value, url]);
+                            }
+                          }}
+                          className="h-full"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            }}
           />
         </CardContent>
       )}
