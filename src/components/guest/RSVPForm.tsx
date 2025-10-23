@@ -25,12 +25,14 @@ interface RSVPFormProps {
   siteSlug: string;
   primaryColor?: string;
   accentColor?: string;
+  guestName?: string;
 }
 
 export function RSVPForm({
   siteSlug,
   primaryColor = '#e4b6c6',
   accentColor = '#9b7e7e',
+  guestName,
 }: RSVPFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,6 +44,9 @@ export function RSVPForm({
     formState: { errors },
   } = useForm<RSVPFormData>({
     resolver: zodResolver(rsvpSchema),
+    defaultValues: {
+      fullName: guestName || '',
+    },
   });
 
   const attending = watch('attending');

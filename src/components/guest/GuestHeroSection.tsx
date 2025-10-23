@@ -5,6 +5,7 @@ interface HeroSectionProps {
   heroImageUrl?: string;
   primaryColor?: string;
   headingFont?: string;
+  guestName?: string;
 }
 
 export function GuestHeroSection({
@@ -14,6 +15,7 @@ export function GuestHeroSection({
   heroImageUrl,
   primaryColor = '#e4b6c6',
   headingFont = 'Playfair Display',
+  guestName,
 }: HeroSectionProps) {
   const formatDate = (date: Date | string | null | undefined) => {
     if (!date) return '';
@@ -39,6 +41,35 @@ export function GuestHeroSection({
     >
       <div className="relative z-10 text-center px-4 py-16">
         <div className="max-w-4xl mx-auto">
+          {/* Personalized Greeting */}
+          {guestName && (
+            <p
+              className="text-lg sm:text-xl md:text-2xl font-light mb-4 tracking-wide"
+              style={{
+                textShadow: heroImageUrl
+                  ? '1px 1px 2px rgba(0,0,0,0.5)'
+                  : 'none',
+                color: heroImageUrl ? '#ffffff' : '#666',
+                fontFamily: headingFont,
+              }}
+            >
+              Dear {guestName},
+            </p>
+          )}
+
+          {/* Invitation Text */}
+          <p
+            className="text-base sm:text-lg md:text-xl font-light mb-6 tracking-wide"
+            style={{
+              textShadow: heroImageUrl
+                ? '1px 1px 2px rgba(0,0,0,0.5)'
+                : 'none',
+              color: heroImageUrl ? '#ffffff' : '#666',
+            }}
+          >
+            You are cordially invited to the wedding of
+          </p>
+
           {/* Decorative element */}
           <div
             className="text-4xl sm:text-6xl mb-6"
