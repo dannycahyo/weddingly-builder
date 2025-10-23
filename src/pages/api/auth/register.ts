@@ -30,10 +30,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Registration failed';
     return new Response(
       JSON.stringify({
-        error: error.message || 'Registration failed',
+        error: message,
       }),
       {
         status: 500,

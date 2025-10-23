@@ -3,12 +3,15 @@ import BuilderForm from './BuilderForm';
 import RSVPList from './RSVPList';
 import { Button } from './ui/button';
 import { LogOut } from 'lucide-react';
+import type { WeddingSite } from '../lib/validations';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'builder' | 'rsvps'>(
     'builder',
   );
-  const [weddingSite, setWeddingSite] = useState<any>(null);
+  const [weddingSite, setWeddingSite] = useState<WeddingSite | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSave = (updatedSite: any) => {
+  const handleSave = (updatedSite: WeddingSite) => {
     setWeddingSite(updatedSite);
   };
 
@@ -106,7 +109,7 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'builder' ? (
           <BuilderForm
-            initialData={weddingSite}
+            initialData={weddingSite ?? undefined}
             onSave={handleSave}
           />
         ) : (

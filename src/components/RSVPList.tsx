@@ -11,16 +11,7 @@ import {
 } from './ui/table';
 import { Download } from 'lucide-react';
 import { format } from 'date-fns';
-
-interface RSVP {
-  id: string;
-  fullName: string;
-  email: string | null;
-  attending: boolean;
-  dietaryRestrictions: string | null;
-  message: string | null;
-  createdAt: string;
-}
+import type { RSVP } from '../lib/validations';
 
 interface RSVPListProps {
   siteId?: string;
@@ -50,8 +41,10 @@ export default function RSVPList({ siteId }: RSVPListProps) {
       const data = await response.json();
       setRsvps(data.rsvps);
       setAnalytics(data.analytics);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to fetch RSVPs';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -73,8 +66,10 @@ export default function RSVPList({ siteId }: RSVPListProps) {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to export RSVPs';
+      setError(message);
     }
   };
 

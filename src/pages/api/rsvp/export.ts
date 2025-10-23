@@ -66,8 +66,10 @@ export const GET: APIRoute = async (context) => {
         'Content-Disposition': `attachment; filename="rsvps-${weddingSite.slug}.csv"`,
       },
     });
-  } catch (error: any) {
-    return new Response(error.message || 'Unauthorized', {
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unauthorized';
+    return new Response(message, {
       status: 401,
     });
   }

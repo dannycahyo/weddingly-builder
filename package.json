@@ -12,6 +12,7 @@
     "@astrojs/mdx": "^4.3.7",
     "@astrojs/node": "^9.5.0",
     "@astrojs/react": "^4.4.0",
+    "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^6.18.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -36,8 +37,10 @@
     "react": "^19.2.0",
     "react-day-picker": "^9.11.1",
     "react-dom": "^19.2.0",
+    "react-hook-form": "^7.65.0",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.14",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "prisma": "^6.18.0",

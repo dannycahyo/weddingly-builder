@@ -50,13 +50,12 @@ export const GET: APIRoute = async (context) => {
         headers: { 'Content-Type': 'application/json' },
       },
     );
-  } catch (error: any) {
-    return new Response(
-      JSON.stringify({ error: error.message || 'Unauthorized' }),
-      {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unauthorized';
+    return new Response(JSON.stringify({ error: message }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };
