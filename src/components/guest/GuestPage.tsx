@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PasswordPrompt } from './PasswordPrompt';
+import { EnvelopeInvitation } from './EnvelopeInvitation';
 import { GuestHeroSection } from './GuestHeroSection';
 import { GuestEventsSection } from './GuestEventsSection';
 import { GuestStorySection } from './GuestStorySection';
@@ -57,6 +59,7 @@ export default function GuestPage({ slug }: GuestPageProps) {
     null,
   );
   const [guestName, setGuestName] = useState<string | null>(null);
+  const [envelopeOpened, setEnvelopeOpened] = useState(false);
 
   useEffect(() => {
     // Get guest name from URL parameter
@@ -165,111 +168,176 @@ export default function GuestPage({ slug }: GuestPageProps) {
   }
 
   return (
-    <div
-      style={{
-        fontFamily: weddingSite.bodyFont,
-      }}
-    >
-      {/* Hero Section */}
-      {weddingSite.heroEnabled && (
-        <GuestHeroSection
-          brideName={weddingSite.brideName}
-          groomName={weddingSite.groomName}
-          weddingDate={weddingSite.weddingDate}
-          heroImageUrl={weddingSite.heroImageUrl}
-          primaryColor={weddingSite.primaryColor}
-          headingFont={weddingSite.headingFont}
-          guestName={guestName || undefined}
-        />
-      )}
+    <>
+      {/* Envelope Animation */}
+      <AnimatePresence>
+        {!envelopeOpened && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.8 }}
+          >
+            <EnvelopeInvitation
+              brideName={weddingSite.brideName}
+              groomName={weddingSite.groomName}
+              guestName={guestName || undefined}
+              primaryColor={weddingSite.primaryColor}
+              secondaryColor={weddingSite.secondaryColor}
+              headingFont={weddingSite.headingFont}
+              onOpen={() => setEnvelopeOpened(true)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Events Section */}
-      {weddingSite.events && weddingSite.events.length > 0 && (
-        <GuestEventsSection
-          events={weddingSite.events}
-          primaryColor={weddingSite.primaryColor}
-          secondaryColor={weddingSite.secondaryColor}
-          headingFont={weddingSite.headingFont}
-          bodyFont={weddingSite.bodyFont}
-        />
-      )}
+      {/* Main Content */}
+      {envelopeOpened && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          style={{
+            fontFamily: weddingSite.bodyFont,
+          }}
+        >
+          {/* Hero Section */}
+          {weddingSite.heroEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <GuestHeroSection
+                brideName={weddingSite.brideName}
+                groomName={weddingSite.groomName}
+                weddingDate={weddingSite.weddingDate}
+                heroImageUrl={weddingSite.heroImageUrl}
+                primaryColor={weddingSite.primaryColor}
+                headingFont={weddingSite.headingFont}
+                guestName={guestName || undefined}
+              />
+            </motion.div>
+          )}
 
-      {/* Story Section */}
-      {weddingSite.storyEnabled && (
-        <GuestStorySection
-          storyTitle={weddingSite.storyTitle}
-          storyText={weddingSite.storyText}
-          storyImage1Url={weddingSite.storyImage1Url}
-          storyImage2Url={weddingSite.storyImage2Url}
-          primaryColor={weddingSite.primaryColor}
-          headingFont={weddingSite.headingFont}
-          bodyFont={weddingSite.bodyFont}
-        />
-      )}
+          {/* Events Section */}
+          {weddingSite.events && weddingSite.events.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <GuestEventsSection
+                events={weddingSite.events}
+                primaryColor={weddingSite.primaryColor}
+                secondaryColor={weddingSite.secondaryColor}
+                headingFont={weddingSite.headingFont}
+                bodyFont={weddingSite.bodyFont}
+              />
+            </motion.div>
+          )}
 
-      {/* Gallery Section */}
-      {weddingSite.galleryEnabled && (
-        <GuestGallerySection
-          galleryTitle={weddingSite.galleryTitle}
-          galleryImages={weddingSite.galleryImages}
-          primaryColor={weddingSite.primaryColor}
-          headingFont={weddingSite.headingFont}
-        />
-      )}
+          {/* Story Section */}
+          {weddingSite.storyEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <GuestStorySection
+                storyTitle={weddingSite.storyTitle}
+                storyText={weddingSite.storyText}
+                storyImage1Url={weddingSite.storyImage1Url}
+                storyImage2Url={weddingSite.storyImage2Url}
+                primaryColor={weddingSite.primaryColor}
+                headingFont={weddingSite.headingFont}
+                bodyFont={weddingSite.bodyFont}
+              />
+            </motion.div>
+          )}
 
-      {/* Registry Section */}
-      {weddingSite.registryEnabled && (
-        <GuestRegistrySection
-          registryTitle={weddingSite.registryTitle}
-          registryText={weddingSite.registryText}
-          primaryColor={weddingSite.primaryColor}
-          secondaryColor={weddingSite.secondaryColor}
-          headingFont={weddingSite.headingFont}
-          bodyFont={weddingSite.bodyFont}
-        />
-      )}
+          {/* Gallery Section */}
+          {weddingSite.galleryEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <GuestGallerySection
+                galleryTitle={weddingSite.galleryTitle}
+                galleryImages={weddingSite.galleryImages}
+                primaryColor={weddingSite.primaryColor}
+                headingFont={weddingSite.headingFont}
+              />
+            </motion.div>
+          )}
 
-      {/* RSVP Section */}
-      <section
-        className="py-16 px-4 sm:py-16"
-        style={{
-          backgroundColor: `${weddingSite.accentColor}15`,
-        }}
-      >
-        <div className="max-w-2xl mx-auto">
-          <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12"
+          {/* Registry Section */}
+          {weddingSite.registryEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.0 }}
+            >
+              <GuestRegistrySection
+                registryTitle={weddingSite.registryTitle}
+                registryText={weddingSite.registryText}
+                primaryColor={weddingSite.primaryColor}
+                secondaryColor={weddingSite.secondaryColor}
+                headingFont={weddingSite.headingFont}
+                bodyFont={weddingSite.bodyFont}
+              />
+            </motion.div>
+          )}
+
+          {/* RSVP Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="py-16 px-4 sm:py-16"
             style={{
-              fontFamily: weddingSite.headingFont,
-              color: '#333',
+              backgroundColor: `${weddingSite.accentColor}15`,
             }}
           >
-            RSVP
-          </h2>
+            <div className="max-w-2xl mx-auto">
+              <h2
+                className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12"
+                style={{
+                  fontFamily: weddingSite.headingFont,
+                  color: '#333',
+                }}
+              >
+                RSVP
+              </h2>
 
-          <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-            <RSVPForm
-              siteSlug={weddingSite.slug}
-              primaryColor={weddingSite.primaryColor}
-              accentColor={weddingSite.accentColor}
-              guestName={guestName || undefined}
-            />
-          </div>
-        </div>
-      </section>
+              <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
+                <RSVPForm
+                  siteSlug={weddingSite.slug}
+                  primaryColor={weddingSite.primaryColor}
+                  accentColor={weddingSite.accentColor}
+                  guestName={guestName || undefined}
+                />
+              </div>
+            </div>
+          </motion.section>
 
-      {/* Footer */}
-      <footer
-        className="py-8 text-center text-sm text-gray-600"
-        style={{
-          backgroundColor: `${weddingSite.primaryColor}08`,
-        }}
-      >
-        <p>
-          Created with ❤️ by{' '}
-          <span className="font-semibold">The Evermore</span>
-        </p>
-      </footer>
-    </div>
+          {/* Footer */}
+          <motion.footer
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="py-8 text-center text-sm text-gray-600"
+            style={{
+              backgroundColor: `${weddingSite.primaryColor}08`,
+            }}
+          >
+            <p>
+              Created with ❤️ by{' '}
+              <span className="font-semibold">The Evermore</span>
+            </p>
+          </motion.footer>
+        </motion.div>
+      )}
+    </>
   );
 }
