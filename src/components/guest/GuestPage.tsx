@@ -8,6 +8,9 @@ import { GuestStorySection } from './GuestStorySection';
 import { GuestGallerySection } from './GuestGallerySection';
 import { GuestRegistrySection } from './GuestRegistrySection';
 import { RSVPForm } from './RSVPForm';
+import { FloatingDecorations } from './decorations/FloatingDecorations';
+import { CornerDecorations } from './decorations/CornerDecorations';
+import { SectionDivider } from './decorations/SectionDivider';
 
 interface WeddingSite {
   id: string;
@@ -224,124 +227,181 @@ export default function GuestPage({ slug }: GuestPageProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
+          className="relative"
           style={{
             fontFamily: weddingSite.bodyFont,
           }}
         >
-          {/* Hero Section */}
-          {weddingSite.heroEnabled && (
-            <ScrollAnimationWrapper delay={0.2}>
-              <GuestHeroSection
-                brideName={weddingSite.brideName}
-                groomName={weddingSite.groomName}
-                weddingDate={weddingSite.weddingDate}
-                heroImageUrl={weddingSite.heroImageUrl}
-                primaryColor={weddingSite.primaryColor}
-                headingFont={weddingSite.headingFont}
-                guestName={guestName || undefined}
-              />
-            </ScrollAnimationWrapper>
-          )}
+          {/* Floating Decorations */}
+          <FloatingDecorations
+            primaryColor={weddingSite.primaryColor}
+            secondaryColor={weddingSite.secondaryColor}
+            accentColor={weddingSite.accentColor}
+          />
 
-          {/* Events Section */}
-          {weddingSite.events && weddingSite.events.length > 0 && (
+          {/* Content with higher z-index */}
+          <div className="relative z-10">
+            {/* Hero Section */}
+            {weddingSite.heroEnabled && (
+              <ScrollAnimationWrapper delay={0.2}>
+                <GuestHeroSection
+                  brideName={weddingSite.brideName}
+                  groomName={weddingSite.groomName}
+                  weddingDate={weddingSite.weddingDate}
+                  heroImageUrl={weddingSite.heroImageUrl}
+                  primaryColor={weddingSite.primaryColor}
+                  headingFont={weddingSite.headingFont}
+                  guestName={guestName || undefined}
+                />
+              </ScrollAnimationWrapper>
+            )}
+            {/* Divider */}
+            {weddingSite.heroEnabled &&
+              weddingSite.events &&
+              weddingSite.events.length > 0 && (
+                <SectionDivider
+                  primaryColor={weddingSite.primaryColor}
+                  accentColor={weddingSite.accentColor}
+                />
+              )}
+            {/* Events Section */}
+            {weddingSite.events && weddingSite.events.length > 0 && (
+              <ScrollAnimationWrapper>
+                <GuestEventsSection
+                  events={weddingSite.events}
+                  primaryColor={weddingSite.primaryColor}
+                  secondaryColor={weddingSite.secondaryColor}
+                  headingFont={weddingSite.headingFont}
+                  bodyFont={weddingSite.bodyFont}
+                />
+              </ScrollAnimationWrapper>
+            )}
+            {/* Divider */}
+            {weddingSite.storyEnabled && (
+              <SectionDivider
+                primaryColor={weddingSite.primaryColor}
+                accentColor={weddingSite.accentColor}
+              />
+            )}
+            {/* Story Section */}
+            {weddingSite.storyEnabled && (
+              <ScrollAnimationWrapper>
+                <GuestStorySection
+                  storyTitle={weddingSite.storyTitle}
+                  storyText={weddingSite.storyText}
+                  storyImage1Url={weddingSite.storyImage1Url}
+                  storyImage2Url={weddingSite.storyImage2Url}
+                  primaryColor={weddingSite.primaryColor}
+                  headingFont={weddingSite.headingFont}
+                  bodyFont={weddingSite.bodyFont}
+                />
+              </ScrollAnimationWrapper>
+            )}
+            {/* Divider */}
+            {weddingSite.galleryEnabled && (
+              <SectionDivider
+                primaryColor={weddingSite.primaryColor}
+                accentColor={weddingSite.accentColor}
+              />
+            )}
+            {/* Gallery Section */}
+            {weddingSite.galleryEnabled && (
+              <ScrollAnimationWrapper>
+                <GuestGallerySection
+                  galleryTitle={weddingSite.galleryTitle}
+                  galleryImages={weddingSite.galleryImages}
+                  primaryColor={weddingSite.primaryColor}
+                  headingFont={weddingSite.headingFont}
+                />
+              </ScrollAnimationWrapper>
+            )}
+            {/* Divider */}
+            {weddingSite.registryEnabled && (
+              <SectionDivider
+                primaryColor={weddingSite.primaryColor}
+                accentColor={weddingSite.accentColor}
+              />
+            )}{' '}
+            {/* Registry Section */}
+            {weddingSite.registryEnabled && (
+              <ScrollAnimationWrapper>
+                <GuestRegistrySection
+                  registryTitle={weddingSite.registryTitle}
+                  registryText={weddingSite.registryText}
+                  primaryColor={weddingSite.primaryColor}
+                  secondaryColor={weddingSite.secondaryColor}
+                  headingFont={weddingSite.headingFont}
+                  bodyFont={weddingSite.bodyFont}
+                />
+              </ScrollAnimationWrapper>
+            )}
+            {/* RSVP Section */}
             <ScrollAnimationWrapper>
-              <GuestEventsSection
-                events={weddingSite.events}
-                primaryColor={weddingSite.primaryColor}
-                secondaryColor={weddingSite.secondaryColor}
-                headingFont={weddingSite.headingFont}
-                bodyFont={weddingSite.bodyFont}
-              />
-            </ScrollAnimationWrapper>
-          )}
+              <section
+                className="relative py-16 px-4 sm:py-16 overflow-hidden"
+                style={{
+                  backgroundColor: `${weddingSite.accentColor}15`,
+                }}
+              >
+                {/* Corner Decorations */}
+                <CornerDecorations
+                  primaryColor={weddingSite.primaryColor}
+                  secondaryColor={weddingSite.secondaryColor}
+                />
 
-          {/* Story Section */}
-          {weddingSite.storyEnabled && (
-            <ScrollAnimationWrapper>
-              <GuestStorySection
-                storyTitle={weddingSite.storyTitle}
-                storyText={weddingSite.storyText}
-                storyImage1Url={weddingSite.storyImage1Url}
-                storyImage2Url={weddingSite.storyImage2Url}
-                primaryColor={weddingSite.primaryColor}
-                headingFont={weddingSite.headingFont}
-                bodyFont={weddingSite.bodyFont}
-              />
-            </ScrollAnimationWrapper>
-          )}
+                <div className="max-w-2xl mx-auto relative z-10">
+                  <h2
+                    className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12"
+                    style={{
+                      fontFamily: weddingSite.headingFont,
+                      color: '#333',
+                    }}
+                  >
+                    RSVP
+                  </h2>
 
-          {/* Gallery Section */}
-          {weddingSite.galleryEnabled && (
-            <ScrollAnimationWrapper>
-              <GuestGallerySection
-                galleryTitle={weddingSite.galleryTitle}
-                galleryImages={weddingSite.galleryImages}
-                primaryColor={weddingSite.primaryColor}
-                headingFont={weddingSite.headingFont}
-              />
-            </ScrollAnimationWrapper>
-          )}
+                  <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 relative overflow-hidden">
+                    {/* Subtle decoration inside form */}
+                    <div
+                      className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-5 blur-2xl"
+                      style={{
+                        backgroundColor: weddingSite.primaryColor,
+                      }}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 w-32 h-32 rounded-full opacity-5 blur-2xl"
+                      style={{
+                        backgroundColor: weddingSite.accentColor,
+                      }}
+                    />
 
-          {/* Registry Section */}
-          {weddingSite.registryEnabled && (
-            <ScrollAnimationWrapper>
-              <GuestRegistrySection
-                registryTitle={weddingSite.registryTitle}
-                registryText={weddingSite.registryText}
-                primaryColor={weddingSite.primaryColor}
-                secondaryColor={weddingSite.secondaryColor}
-                headingFont={weddingSite.headingFont}
-                bodyFont={weddingSite.bodyFont}
-              />
-            </ScrollAnimationWrapper>
-          )}
-
-          {/* RSVP Section */}
-          <ScrollAnimationWrapper>
-            <section
-              className="py-16 px-4 sm:py-16"
-              style={{
-                backgroundColor: `${weddingSite.accentColor}15`,
-              }}
-            >
-              <div className="max-w-2xl mx-auto">
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12"
-                  style={{
-                    fontFamily: weddingSite.headingFont,
-                    color: '#333',
-                  }}
-                >
-                  RSVP
-                </h2>
-
-                <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-                  <RSVPForm
-                    siteSlug={weddingSite.slug}
-                    primaryColor={weddingSite.primaryColor}
-                    accentColor={weddingSite.accentColor}
-                    guestName={guestName || undefined}
-                  />
+                    <div className="relative z-10">
+                      <RSVPForm
+                        siteSlug={weddingSite.slug}
+                        primaryColor={weddingSite.primaryColor}
+                        accentColor={weddingSite.accentColor}
+                        guestName={guestName || undefined}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </section>
-          </ScrollAnimationWrapper>
-
-          {/* Footer */}
-          <ScrollAnimationWrapper>
-            <footer
-              className="py-8 text-center text-sm text-gray-600"
-              style={{
-                backgroundColor: `${weddingSite.primaryColor}08`,
-              }}
-            >
-              <p>
-                Created with ❤️ by{' '}
-                <span className="font-semibold">The Evermore</span>
-              </p>
-            </footer>
-          </ScrollAnimationWrapper>
+              </section>
+            </ScrollAnimationWrapper>
+            {/* Footer */}
+            <ScrollAnimationWrapper>
+              <footer
+                className="py-8 text-center text-sm text-gray-600"
+                style={{
+                  backgroundColor: `${weddingSite.primaryColor}08`,
+                }}
+              >
+                <p>
+                  Created with ❤️ by{' '}
+                  <span className="font-semibold">The Evermore</span>
+                </p>
+              </footer>
+            </ScrollAnimationWrapper>
+          </div>
         </motion.div>
       )}
     </>
