@@ -14,10 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
-import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { FormField } from '../FormField';
-import { Trash2 } from 'lucide-react';
+import { ImageUpload } from '../ImageUpload';
+import { Trash2, Plus } from 'lucide-react';
 import type { WeddingSiteFormData } from '../../lib/validations';
 
 interface GallerySectionProps {
@@ -33,7 +33,9 @@ export function GallerySection({
   control,
   watch,
 }: GallerySectionProps) {
-  const [newImageUrl, setNewImageUrl] = useState('');
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(
+    null,
+  );
   const galleryEnabled = watch('galleryEnabled');
   const galleryImages = watch('galleryImages') || [];
 
@@ -78,48 +80,29 @@ export function GallerySection({
             name="galleryImages"
             control={control}
             render={({ field }) => (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Add Image URL
-                </label>
-                <div className="flex gap-2">
-                  <Input
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    disabled={field.value.length >= 10}
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (newImageUrl && field.value.length < 10) {
-                        field.onChange([...field.value, newImageUrl]);
-                        setNewImageUrl('');
-                      }
-                    }}
-                    disabled={
-                      field.value.length >= 10 || !newImageUrl
-                    }
-                  >
-                    Add
-                  </Button>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">
+                    Gallery Images
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    {field.value.length}/10 images
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {field.value.length}/10 images added
-                </p>
+
                 {errors.galleryImages && (
                   <p className="text-sm text-red-500">
                     {errors.galleryImages.message}
                   </p>
                 )}
 
-                <div className="grid grid-cols-3 gap-4 mt-4">
+                <div className="grid grid-cols-3 gap-4">
                   {field.value.map((url, index) => (
                     <div key={index} className="relative group">
                       <img
                         src={url}
                         alt={`Gallery ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-md"
+                        className="w-full h-32 object-cover rounded-md border"
                       />
                       <Button
                         type="button"
@@ -137,6 +120,20 @@ export function GallerySection({
                       </Button>
                     </div>
                   ))}
+
+                  {field.value.length < 10 && (
+                    <div className="relative">
+                      <ImageUpload
+                        value=""
+                        onChange={(url) => {
+                          if (field.value.length < 10) {
+                            field.onChange([...field.value, url]);
+                          }
+                        }}
+                        className="h-32"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
