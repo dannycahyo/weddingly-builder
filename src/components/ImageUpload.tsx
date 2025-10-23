@@ -6,6 +6,7 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
+import { AspectRatio } from './ui/aspect-ratio';
 import { Upload, X, Loader2 } from 'lucide-react';
 
 interface ImageUploadProps {
@@ -117,11 +118,13 @@ export function ImageUpload({
 
       {value ? (
         <div className="relative group">
-          <img
-            src={value}
-            alt="Upload preview"
-            className="w-full h-48 object-cover rounded-md border"
-          />
+          <AspectRatio ratio={16 / 9}>
+            <img
+              src={value}
+              alt="Upload preview"
+              className="w-full h-full object-cover rounded-md border"
+            />
+          </AspectRatio>
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-2">
             <Button
               type="button"
