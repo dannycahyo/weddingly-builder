@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import BuilderForm from './BuilderForm';
 import RSVPList from './RSVPList';
 import { Button } from './ui/button';
@@ -35,9 +36,11 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
+      toast.success('Logged out successfully');
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout failed:', error);
+      toast.error('Logout failed. Please try again.');
     }
   };
 

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import AuthForm from '../components/AuthForm';
+import { Toaster } from '../components/ui/sonner';
 ---
 
 <html lang="en">
@@ -22,5 +23,6 @@ import AuthForm from '../components/AuthForm';
         <AuthForm client:load />
       </div>
     </div>
+    <Toaster client:only="react" />
   </body>
 </html>

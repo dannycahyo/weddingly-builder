@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
@@ -25,7 +26,6 @@ export default function RSVPList({ siteId }: RSVPListProps) {
     total: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchRSVPs();
@@ -44,7 +44,7 @@ export default function RSVPList({ siteId }: RSVPListProps) {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to fetch RSVPs';
-      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -66,10 +66,12 @@ export default function RSVPList({ siteId }: RSVPListProps) {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      toast.success('RSVPs exported successfully!');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to export RSVPs';
-      setError(message);
+      toast.error(message);
     }
   };
 
@@ -79,12 +81,6 @@ export default function RSVPList({ siteId }: RSVPListProps) {
 
   return (
     <div className="space-y-6">
-      {error && (
-        <div className="p-4 bg-red-50 text-red-900 rounded-md">
-          {error}
-        </div>
-      )}
-
       {/* Analytics Cards */}
       <div className="grid grid-cols-3 gap-4">
         <Card>

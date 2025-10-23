@@ -4,6 +4,7 @@ import {
   type ChangeEvent,
   type DragEvent,
 } from 'react';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Upload, X, Loader2 } from 'lucide-react';
 
@@ -24,11 +25,9 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (file: File) => {
-    setError(null);
     setUploading(true);
 
     try {
@@ -58,10 +57,11 @@ export function ImageUpload({
 
       const result = await response.json();
       onChange(result.url);
+      toast.success('Image uploaded successfully!');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to upload image';
-      setError(message);
+      toast.error(message);
       console.error('Upload error:', err);
     } finally {
       setUploading(false);
@@ -105,7 +105,6 @@ export function ImageUpload({
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-    setError(null);
   };
 
   return (
@@ -188,8 +187,6 @@ export function ImageUpload({
         className="hidden"
         disabled={uploading}
       />
-
-      {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
     </div>
   );
 }

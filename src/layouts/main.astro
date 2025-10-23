@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 const { content } = Astro.props;
+import { Toaster } from '@/components/ui/sonner';
 ---
 
 <html lang="en">
@@ -12,5 +13,6 @@ const { content } = Astro.props;
 	</head>
 	<body>
 		<slot />
+		<Toaster client:only="react" />
 	</body>
 </html>

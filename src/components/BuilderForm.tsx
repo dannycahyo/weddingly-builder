@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Save } from 'lucide-react';
 import {
@@ -9,8 +10,6 @@ import {
   type WeddingSite,
 } from '../lib/validations';
 import { weddingSiteService } from '../lib/api';
-import { useNotification } from '../hooks/useNotification';
-import { Notification } from './Notification';
 import { GlobalStylesSection } from './sections/GlobalStylesSection';
 import { HeroSection } from './sections/HeroSection';
 import { EventsSection } from './sections/EventsSection';
@@ -28,9 +27,6 @@ export default function BuilderForm({
   initialData,
   onSave,
 }: BuilderFormProps) {
-  const { notification, showSuccess, showError, clearNotification } =
-    useNotification();
-
   const form = useForm<WeddingSiteFormData>({
     resolver: zodResolver(weddingSiteSchema),
     defaultValues: {
@@ -132,8 +128,6 @@ export default function BuilderForm({
   }, [initialData, form]);
 
   const onSubmit = async (data: WeddingSiteFormData) => {
-    clearNotification();
-
     try {
       // Auto-generate slug if empty
       if (!data.slug && data.brideName && data.groomName) {
@@ -144,7 +138,7 @@ export default function BuilderForm({
 
       const result = await weddingSiteService.save(data);
 
-      showSuccess('Wedding site saved successfully!');
+      toast.success('Wedding site saved successfully!');
 
       if (onSave) {
         onSave(result.weddingSite);
@@ -154,13 +148,11 @@ export default function BuilderForm({
         error instanceof Error
           ? error.message
           : 'Failed to save wedding site';
-      showError(message);
+      toast.error(message);
     }
   };
 
   const handlePublish = handleSubmit(async (data) => {
-    clearNotification();
-
     try {
       // Auto-generate slug if empty
       if (!data.slug && data.brideName && data.groomName) {
@@ -171,7 +163,7 @@ export default function BuilderForm({
 
       const result = await weddingSiteService.save(data);
 
-      showSuccess('Wedding site published successfully!');
+      toast.success('Wedding site published successfully!');
 
       if (onSave) {
         onSave(result.weddingSite);
@@ -181,7 +173,7 @@ export default function BuilderForm({
         error instanceof Error
           ? error.message
           : 'Failed to publish wedding site';
-      showError(message);
+      toast.error(message);
     }
   });
 
@@ -190,14 +182,6 @@ export default function BuilderForm({
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6 pb-10"
     >
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={clearNotification}
-        />
-      )}
-
       <GlobalStylesSection
         register={register}
         errors={errors}

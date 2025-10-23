@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import AdminDashboard from '../components/AdminDashboard';
+import { Toaster } from '../components/ui/sonner';
 import { getSession } from '../lib/auth';
 
 // Check if user is authenticated
@@ -21,5 +22,6 @@ if (!session) {
 
   <body>
     <AdminDashboard client:load />
+    <Toaster client:only="react" />
   </body>
 </html>

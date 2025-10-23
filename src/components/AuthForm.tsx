@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import {
   Card,
@@ -17,7 +18,6 @@ import {
   type RegisterFormData,
 } from '../lib/validations';
 import { authService } from '../lib/api';
-import { useNotification } from '../hooks/useNotification';
 
 interface AuthFormProps {
   onSuccess?: () => void;
@@ -25,8 +25,6 @@ interface AuthFormProps {
 
 export default function AuthForm({ onSuccess }: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(true);
-  const { notification, showError, clearNotification } =
-    useNotification();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -52,13 +50,13 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
   } = currentForm;
 
   const onSubmit = async (data: LoginFormData | RegisterFormData) => {
-    clearNotification();
-
     try {
       if (isLogin) {
         await authService.login(data);
+        toast.success('Login successful!');
       } else {
         await authService.register(data);
+        toast.success('Registration successful!');
       }
 
       // Redirect to admin
@@ -70,13 +68,12 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Authentication failed';
-      showError(message);
+      toast.error(message);
     }
   };
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
-    clearNotification();
     loginForm.reset();
     registerForm.reset();
   };
@@ -93,12 +90,6 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {notification && notification.type === 'error' && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-              {notification.message}
-            </div>
-          )}
-
           <FormField
             label="Email"
             name="email"
