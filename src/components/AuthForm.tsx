@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import {
   Card,
   CardContent,
@@ -8,6 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card';
+import { FormField } from './FormField';
+import {
+  loginSchema,
+  registerSchema,
+  type LoginFormData,
+  type RegisterFormData,
+} from '../lib/validations';
+import { authService } from '../lib/api';
+import { useNotification } from '../hooks/useNotification';
 
 interface AuthFormProps {
   onSuccess?: () => void;
@@ -15,39 +25,60 @@ interface AuthFormProps {
 
 export default function AuthForm({ onSuccess }: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { notification, showError, clearNotification } =
+    useNotification();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const loginForm = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const registerForm = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const currentForm = isLogin ? loginForm : registerForm;
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = currentForm;
+
+  const onSubmit = async (data: LoginFormData | RegisterFormData) => {
+    clearNotification();
 
     try {
-      const endpoint = isLogin
-        ? '/api/auth/login'
-        : '/api/auth/register';
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
+      if (isLogin) {
+        await authService.login(data);
+      } else {
+        await authService.register(data);
       }
 
       // Redirect to admin
       window.location.href = '/admin';
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Authentication failed';
+      showError(message);
     }
+  };
+
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    clearNotification();
+    loginForm.reset();
+    registerForm.reset();
   };
 
   return (
@@ -61,44 +92,41 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {notification && notification.type === 'error' && (
             <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-              {error}
+              {notification.message}
             </div>
           )}
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              required
-            />
-          </div>
+          <FormField
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            register={register}
+            errors={errors}
+            required
+            disabled={isSubmitting}
+          />
 
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-            />
-          </div>
+          <FormField
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            register={register}
+            errors={errors}
+            required
+            disabled={isSubmitting}
+          />
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
               ? 'Loading...'
               : isLogin
               ? 'Login'
@@ -111,11 +139,9 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
               : 'Already have an account? '}
             <button
               type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-              }}
+              onClick={toggleMode}
               className="text-primary hover:underline font-medium"
+              disabled={isSubmitting}
             >
               {isLogin ? 'Sign up' : 'Login'}
             </button>

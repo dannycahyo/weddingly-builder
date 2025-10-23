@@ -2,6 +2,14 @@ import type { APIRoute } from 'astro';
 import { requireAuth } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
 
+interface EventData {
+  title: string;
+  date: string | Date;
+  time: string;
+  location: string;
+  address: string;
+}
+
 export const GET: APIRoute = async (context) => {
   try {
     const session = await requireAuth(context);
@@ -19,14 +27,13 @@ export const GET: APIRoute = async (context) => {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error: any) {
-    return new Response(
-      JSON.stringify({ error: error.message || 'Unauthorized' }),
-      {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unauthorized';
+    return new Response(JSON.stringify({ error: message }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };
 
@@ -40,12 +47,14 @@ export const POST: APIRoute = async (context) => {
       where: { userId: session.userId },
     });
 
-    let weddingSite: any;
+    const { events, ...siteData } = data;
+
+    let weddingSite: Awaited<
+      ReturnType<typeof prisma.weddingSite.create>
+    > | null = null;
 
     if (existingSite) {
       // Update existing site
-      const { events, ...siteData } = data;
-
       weddingSite = await prisma.weddingSite.update({
         where: { userId: session.userId },
         data: {
@@ -69,10 +78,11 @@ export const POST: APIRoute = async (context) => {
         });
 
         // Create new events
-        if (events.length > 0) {
+        if (events.length > 0 && weddingSite) {
+          const siteId = weddingSite.id;
           await prisma.event.createMany({
-            data: events.map((event: any, index: number) => ({
-              siteId: weddingSite.id,
+            data: events.map((event: EventData, index: number) => ({
+              siteId,
               title: event.title,
               date: new Date(event.date),
               time: event.time,
@@ -81,22 +91,20 @@ export const POST: APIRoute = async (context) => {
               order: index,
             })),
           });
-        }
 
-        // Fetch updated site with events
-        weddingSite = await prisma.weddingSite.findUnique({
-          where: { id: weddingSite.id },
-          include: {
-            events: {
-              orderBy: { order: 'asc' },
+          // Fetch updated site with events
+          weddingSite = await prisma.weddingSite.findUnique({
+            where: { id: siteId },
+            include: {
+              events: {
+                orderBy: { order: 'asc' },
+              },
             },
-          },
-        });
+          });
+        }
       }
     } else {
       // Create new site
-      const { events, ...siteData } = data;
-
       weddingSite = await prisma.weddingSite.create({
         data: {
           userId: session.userId,
@@ -114,10 +122,11 @@ export const POST: APIRoute = async (context) => {
       });
 
       // Create events if provided
-      if (events && events.length > 0) {
+      if (events && events.length > 0 && weddingSite) {
+        const siteId = weddingSite.id;
         await prisma.event.createMany({
-          data: events.map((event: any, index: number) => ({
-            siteId: weddingSite.id,
+          data: events.map((event: EventData, index: number) => ({
+            siteId,
             title: event.title,
             date: new Date(event.date),
             time: event.time,
@@ -129,7 +138,7 @@ export const POST: APIRoute = async (context) => {
 
         // Fetch updated site with events
         weddingSite = await prisma.weddingSite.findUnique({
-          where: { id: weddingSite.id },
+          where: { id: siteId },
           include: {
             events: {
               orderBy: { order: 'asc' },
@@ -143,11 +152,15 @@ export const POST: APIRoute = async (context) => {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Failed to save wedding site';
     console.error('Wedding site save error:', error);
     return new Response(
       JSON.stringify({
-        error: error.message || 'Failed to save wedding site',
+        error: message,
       }),
       {
         status: 500,
