@@ -56,8 +56,16 @@ export default function GuestPage({ slug }: GuestPageProps) {
   const [weddingSite, setWeddingSite] = useState<WeddingSite | null>(
     null,
   );
+  const [guestName, setGuestName] = useState<string | null>(null);
 
   useEffect(() => {
+    // Get guest name from URL parameter
+    const params = new URLSearchParams(window.location.search);
+    const toParam = params.get('to');
+    if (toParam) {
+      setGuestName(decodeURIComponent(toParam));
+    }
+
     fetchWeddingSite();
   }, [slug]);
 
@@ -171,6 +179,7 @@ export default function GuestPage({ slug }: GuestPageProps) {
           heroImageUrl={weddingSite.heroImageUrl}
           primaryColor={weddingSite.primaryColor}
           headingFont={weddingSite.headingFont}
+          guestName={guestName || undefined}
         />
       )}
 
@@ -243,6 +252,7 @@ export default function GuestPage({ slug }: GuestPageProps) {
               siteSlug={weddingSite.slug}
               primaryColor={weddingSite.primaryColor}
               accentColor={weddingSite.accentColor}
+              guestName={guestName || undefined}
             />
           </div>
         </div>
