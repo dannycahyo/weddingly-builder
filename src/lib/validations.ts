@@ -90,6 +90,7 @@ export const registrySectionSchema = z.object({
 export const publishingSchema = z.object({
   slug: z.string().optional(),
   password: z.string().optional(),
+  isPublished: z.boolean().optional(),
 });
 
 // Complete Wedding Site Schema
@@ -128,6 +129,7 @@ export const weddingSiteSchema = z.object({
   // Publishing
   slug: z.string().optional(),
   password: z.string().optional(),
+  isPublished: z.boolean().optional(),
 
   // Events
   events: z.array(eventSchema),
