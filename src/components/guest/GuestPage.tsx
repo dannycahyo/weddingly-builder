@@ -69,6 +69,14 @@ export default function GuestPage({ slug }: GuestPageProps) {
   const [guestName, setGuestName] = useState<string | null>(null);
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
 
+  const handleEnvelopeOpen = () => {
+    setEnvelopeOpened(true);
+    // Trigger music playback on user interaction
+    if ((window as any).playWeddingMusic) {
+      (window as any).playWeddingMusic();
+    }
+  };
+
   // Scroll animation component
   const ScrollAnimationWrapper = ({
     children,
@@ -205,6 +213,17 @@ export default function GuestPage({ slug }: GuestPageProps) {
 
   return (
     <>
+      {/* Music Player - Always shown if enabled */}
+      {weddingSite.musicEnabled && weddingSite.musicUrl && (
+        <MusicPlayer
+          musicUrl={weddingSite.musicUrl}
+          musicTitle={weddingSite.musicTitle}
+          musicArtist={weddingSite.musicArtist}
+          primaryColor={weddingSite.primaryColor}
+          onUserInteraction={handleEnvelopeOpen}
+        />
+      )}
+
       {/* Envelope Animation */}
       <AnimatePresence>
         {!envelopeOpened && (
@@ -220,7 +239,7 @@ export default function GuestPage({ slug }: GuestPageProps) {
               primaryColor={weddingSite.primaryColor}
               secondaryColor={weddingSite.secondaryColor}
               headingFont={weddingSite.headingFont}
-              onOpen={() => setEnvelopeOpened(true)}
+              onOpen={handleEnvelopeOpen}
             />
           </motion.div>
         )}
@@ -407,16 +426,6 @@ export default function GuestPage({ slug }: GuestPageProps) {
               </footer>
             </ScrollAnimationWrapper>
           </div>
-
-          {/* Music Player */}
-          {weddingSite.musicEnabled && weddingSite.musicUrl && (
-            <MusicPlayer
-              musicUrl={weddingSite.musicUrl}
-              musicTitle={weddingSite.musicTitle}
-              musicArtist={weddingSite.musicArtist}
-              primaryColor={weddingSite.primaryColor}
-            />
-          )}
         </motion.div>
       )}
     </>

@@ -7,6 +7,7 @@ interface MusicPlayerProps {
   musicTitle?: string;
   musicArtist?: string;
   primaryColor: string;
+  onUserInteraction?: () => void;
 }
 
 export function MusicPlayer({
@@ -14,9 +15,10 @@ export function MusicPlayer({
   musicTitle,
   musicArtist,
   primaryColor,
+  onUserInteraction,
 }: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [showPlayer, setShowPlayer] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -24,23 +26,33 @@ export function MusicPlayer({
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Set initial volume
+    // Set initial volume and loop
     audio.volume = 0.3;
     audio.loop = true;
-
-    // Try to autoplay (will be muted initially due to browser policies)
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          // Autoplay was prevented
-          setIsPlaying(false);
-        });
-    }
   }, []);
+
+  // Expose play function to parent component
+  useEffect(() => {
+    if (onUserInteraction) {
+      (window as any).playWeddingMusic = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        audio
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {
+            console.log('Play error:', error);
+          });
+      };
+    }
+
+    return () => {
+      delete (window as any).playWeddingMusic;
+    };
+  }, [onUserInteraction]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -65,7 +77,7 @@ export function MusicPlayer({
 
   return (
     <>
-      <audio ref={audioRef} src={musicUrl} muted />
+      <audio ref={audioRef} src={musicUrl} />
 
       <AnimatePresence>
         {showPlayer && (
@@ -74,7 +86,8 @@ export function MusicPlayer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
             transition={{ duration: 0.5, delay: 1 }}
-            className="fixed bottom-6 right-6 z-50"
+            style={{ zIndex: 9999 }}
+            className="fixed bottom-6 right-6"
           >
             <div
               className="bg-white rounded-2xl shadow-2xl p-4 backdrop-blur-sm border-2"
