@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { PasswordPrompt } from './PasswordPrompt';
 import { EnvelopeInvitation } from './EnvelopeInvitation';
 import { GuestHeroSection } from './GuestHeroSection';
@@ -60,6 +60,34 @@ export default function GuestPage({ slug }: GuestPageProps) {
   );
   const [guestName, setGuestName] = useState<string | null>(null);
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
+
+  // Scroll animation component
+  const ScrollAnimationWrapper = ({
+    children,
+    delay = 0,
+  }: {
+    children: React.ReactNode;
+    delay?: number;
+  }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, {
+      once: true,
+      margin: '-100px',
+    });
+
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 50 }}
+        animate={
+          isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }
+        }
+        transition={{ duration: 0.8, delay }}
+      >
+        {children}
+      </motion.div>
+    );
+  };
 
   useEffect(() => {
     // Get guest name from URL parameter
@@ -202,11 +230,7 @@ export default function GuestPage({ slug }: GuestPageProps) {
         >
           {/* Hero Section */}
           {weddingSite.heroEnabled && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
+            <ScrollAnimationWrapper delay={0.2}>
               <GuestHeroSection
                 brideName={weddingSite.brideName}
                 groomName={weddingSite.groomName}
@@ -216,16 +240,12 @@ export default function GuestPage({ slug }: GuestPageProps) {
                 headingFont={weddingSite.headingFont}
                 guestName={guestName || undefined}
               />
-            </motion.div>
+            </ScrollAnimationWrapper>
           )}
 
           {/* Events Section */}
           {weddingSite.events && weddingSite.events.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
+            <ScrollAnimationWrapper>
               <GuestEventsSection
                 events={weddingSite.events}
                 primaryColor={weddingSite.primaryColor}
@@ -233,16 +253,12 @@ export default function GuestPage({ slug }: GuestPageProps) {
                 headingFont={weddingSite.headingFont}
                 bodyFont={weddingSite.bodyFont}
               />
-            </motion.div>
+            </ScrollAnimationWrapper>
           )}
 
           {/* Story Section */}
           {weddingSite.storyEnabled && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-            >
+            <ScrollAnimationWrapper>
               <GuestStorySection
                 storyTitle={weddingSite.storyTitle}
                 storyText={weddingSite.storyText}
@@ -252,32 +268,24 @@ export default function GuestPage({ slug }: GuestPageProps) {
                 headingFont={weddingSite.headingFont}
                 bodyFont={weddingSite.bodyFont}
               />
-            </motion.div>
+            </ScrollAnimationWrapper>
           )}
 
           {/* Gallery Section */}
           {weddingSite.galleryEnabled && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
+            <ScrollAnimationWrapper>
               <GuestGallerySection
                 galleryTitle={weddingSite.galleryTitle}
                 galleryImages={weddingSite.galleryImages}
                 primaryColor={weddingSite.primaryColor}
                 headingFont={weddingSite.headingFont}
               />
-            </motion.div>
+            </ScrollAnimationWrapper>
           )}
 
           {/* Registry Section */}
           {weddingSite.registryEnabled && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.0 }}
-            >
+            <ScrollAnimationWrapper>
               <GuestRegistrySection
                 registryTitle={weddingSite.registryTitle}
                 registryText={weddingSite.registryText}
@@ -286,56 +294,54 @@ export default function GuestPage({ slug }: GuestPageProps) {
                 headingFont={weddingSite.headingFont}
                 bodyFont={weddingSite.bodyFont}
               />
-            </motion.div>
+            </ScrollAnimationWrapper>
           )}
 
           {/* RSVP Section */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="py-16 px-4 sm:py-16"
-            style={{
-              backgroundColor: `${weddingSite.accentColor}15`,
-            }}
-          >
-            <div className="max-w-2xl mx-auto">
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12"
-                style={{
-                  fontFamily: weddingSite.headingFont,
-                  color: '#333',
-                }}
-              >
-                RSVP
-              </h2>
+          <ScrollAnimationWrapper>
+            <section
+              className="py-16 px-4 sm:py-16"
+              style={{
+                backgroundColor: `${weddingSite.accentColor}15`,
+              }}
+            >
+              <div className="max-w-2xl mx-auto">
+                <h2
+                  className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12"
+                  style={{
+                    fontFamily: weddingSite.headingFont,
+                    color: '#333',
+                  }}
+                >
+                  RSVP
+                </h2>
 
-              <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-                <RSVPForm
-                  siteSlug={weddingSite.slug}
-                  primaryColor={weddingSite.primaryColor}
-                  accentColor={weddingSite.accentColor}
-                  guestName={guestName || undefined}
-                />
+                <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
+                  <RSVPForm
+                    siteSlug={weddingSite.slug}
+                    primaryColor={weddingSite.primaryColor}
+                    accentColor={weddingSite.accentColor}
+                    guestName={guestName || undefined}
+                  />
+                </div>
               </div>
-            </div>
-          </motion.section>
+            </section>
+          </ScrollAnimationWrapper>
 
           {/* Footer */}
-          <motion.footer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.4 }}
-            className="py-8 text-center text-sm text-gray-600"
-            style={{
-              backgroundColor: `${weddingSite.primaryColor}08`,
-            }}
-          >
-            <p>
-              Created with ❤️ by{' '}
-              <span className="font-semibold">The Evermore</span>
-            </p>
-          </motion.footer>
+          <ScrollAnimationWrapper>
+            <footer
+              className="py-8 text-center text-sm text-gray-600"
+              style={{
+                backgroundColor: `${weddingSite.primaryColor}08`,
+              }}
+            >
+              <p>
+                Created with ❤️ by{' '}
+                <span className="font-semibold">The Evermore</span>
+              </p>
+            </footer>
+          </ScrollAnimationWrapper>
         </motion.div>
       )}
     </>
