@@ -154,7 +154,7 @@ export function EnvelopeInvitation({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onOpen}
-          className="mt-12 px-8 py-3 rounded-full text-white font-medium shadow-lg hover:shadow-xl transition-shadow"
+          className="mt-12 px-8 py-3 rounded-full text-white font-medium shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
           style={{
             backgroundColor: secondaryColor,
             fontFamily: headingFont,
